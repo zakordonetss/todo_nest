@@ -21,6 +21,9 @@ export class Todo {
   @Column({ default: false })
   isCompleted: boolean;
 
+  @Column({ type: 'timestamp' })
+  dueDate: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 

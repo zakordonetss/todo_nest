@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -21,8 +22,11 @@ export class TodoController {
   }
 
   @Get()
-  findMany() {
-    return this.todoService.findMany();
+  findMany(
+    @Query('search') search?: string,
+    @Query('sortDirection') sortDirection?: 'ASC' | 'DESC',
+  ) {
+    return this.todoService.findMany({ search, sortDirection });
   }
 
   @Get(':id')

@@ -17,8 +17,26 @@ export class TodoService {
     return this.todoRepository.save(todo);
   }
 
-  findMany(): Promise<Todo[]> {
-    return this.todoRepository.find();
+  async findMany(params?: {
+    search?: string;
+    sortDirection?: 'ASC' | 'DESC';
+  }): Promise<Todo[]> {
+    const { search, sortDirection } = params;
+
+    let query = this.todoRepository.createQueryBuilder('todo');
+
+    if (search) {
+      query = query.where(
+        '(todo.title LIKE :search OR todo.description LIKE :search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    if (sortDirection) {
+      query = query.orderBy('todo.dueDate', sortDirection);
+    }
+
+    return await query.getMany();
   }
 
   findOne(id: number): Promise<Todo> {
@@ -31,6 +49,6 @@ export class TodoService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.todoRepository.delete(id);
+    await this.todoRepository.softDelete(id);
   }
 }
