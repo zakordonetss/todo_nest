@@ -13,7 +13,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
-    const errors = exception.getResponse() as IValidationError;
+    const errors = exception.getResponse();
 
     const validationErrors = this.mapValidationErrors(errors);
 
@@ -26,14 +26,18 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     });
   }
 
-  private mapValidationErrors(error: IValidationError): {
+  private mapValidationErrors(error: IValidationError | object | string): {
     [key: string]: string[];
   } {
-    if (typeof error.message === 'string') return { 1: error.message };
-    return error.message.reduce(
-      (acc, errorMessage, index) => ({ ...acc, [index]: errorMessage }),
-      {},
-    );
+    if (typeof error === 'string') return { 1: [error] };
+    if (typeof error['message'] === 'string') return { 1: [error['message']] };
+
+    if (Array.isArray(error['message'])) {
+      return error['message'].reduce(
+        (acc, errorMessage, index) => ({ ...acc, [index]: errorMessage }),
+        {},
+      );
+    }
   }
 }
 

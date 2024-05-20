@@ -12,7 +12,7 @@ export class TodoService {
     private readonly todoRepository: Repository<Todo>,
   ) {}
 
-  create(createTodoDto: CreateTodoDto): Promise<Todo> {
+  async create(createTodoDto: CreateTodoDto): Promise<Todo> {
     const todo = this.todoRepository.create(createTodoDto);
     return this.todoRepository.save(todo);
   }
@@ -36,10 +36,10 @@ export class TodoService {
       query = query.orderBy('todo.dueDate', sortDirection);
     }
 
-    return await query.getMany();
+    return query.getMany();
   }
 
-  findOne(id: number): Promise<Todo> {
+  async findOne(id: number): Promise<Todo> {
     return this.todoRepository.findOne({ where: { id } });
   }
 
